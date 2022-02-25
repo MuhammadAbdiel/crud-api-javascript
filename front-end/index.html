@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coba REST API</title>
+
+    <!-- Bootstrap CSS  -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container mt-3">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center mb-3">
+                <h1>Warung Kita</h1>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form id="action-form">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="price">
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity">
+                    </div>
+                    <div class="mb-3">
+                        <label for="active" class="form-label">Active</label>
+                        <input type="number" class="form-control" id="active">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="description">
+                    </div>
+                    <div class="mb-3" id="button">
+                        <button type="submit" id="submit-button" class="btn btn-primary">Add Data</button>
+                        <button type="submit" id="update-button" class="btn btn-success" style="display: none;">Update
+                            Data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="row justify-content-center" id="body-content">
+            <!-- <div class="col-lg-4 col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Yummy Bites</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Rp. 10000</h6>
+                        <p class="card-text">Makanan Bayi Sehat Tanpa Pengawet</p>
+                        <a href="#" class="card-link">Edit</a>
+                        <a href="#" class="card-link">Delete</a>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+    </script>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+
+</html>
