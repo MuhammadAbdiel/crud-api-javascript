@@ -111,11 +111,11 @@ class ProductController extends Controller
         }
 
         $validateData = $request->validate([
-            'name' => 'required|max:255',
-            'price' => 'required|numeric',
-            'quantity' => 'required|numeric',
-            'active' => 'required|boolean',
-            'description' => 'required'
+            'name' => 'max:255',
+            'price' => 'numeric',
+            'quantity' => 'numeric',
+            'active' => 'boolean',
+            'description' => ''
         ]);
 
         Product::where('id', $product->id)->update($validateData);

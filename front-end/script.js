@@ -8,7 +8,23 @@ const inputQuantity = document.getElementById('quantity');
 let content = '';
 
 const url = 'http://127.0.0.1:8000/api/product';
-const url2 = 'https://jsonplaceholder.typicode.com/posts';
+// const url2 = 'https://jsonplaceholder.typicode.com/posts';
+
+// Menampilkan form untuk tambah data atau edit data
+
+const showform = document.getElementById('show-form');
+const inputForm = document.querySelector('form');
+
+showform.addEventListener('click', function (event) {
+    event.preventDefault();
+    inputForm.classList.toggle('button-toggle');
+
+    if (inputForm.classList.contains('button-toggle')) {
+        showform.innerText = 'Hide Form';
+    } else {
+        showform.innerText = 'Show Form';
+    }
+});
 
 // * Read Data
 
@@ -94,6 +110,24 @@ bodyContent.addEventListener('click', function (event) {
                 .then(response => response.json())
                 .then(() => location.reload());
         });
+
+        const addData = document.getElementById('add-data');
+        addData.style.display = 'inline';
+
+        addData.addEventListener('click', function (event) {
+            event.preventDefault();
+
+            addData.style.display = 'none';
+
+            updateButton.style.display = 'none';
+            submitButton.style.display = 'block';
+
+            inputName.value = '';
+            inputPrice.value = '';
+            inputQuantity.value = '';
+            inputActive.value = '';
+            inputDescription.value = '';
+        });
     }
 });
 
@@ -105,7 +139,7 @@ submitButton.addEventListener('click', function (event) {
     fetch(url, {
             method: 'POST',
             headers: {
-                "Content-Type": "application/json; charset=UTF-8"
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 name: inputName.value,
