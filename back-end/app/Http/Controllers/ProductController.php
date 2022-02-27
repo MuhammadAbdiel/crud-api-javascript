@@ -67,14 +67,6 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        if (!$product) {
-            return response()->json(
-                [
-                    "message" => "Data Not Found"
-                ],
-            );
-        }
-
         return response()->json(
             [
                 "message" => "Read Data Success",
@@ -102,14 +94,6 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        if (!$product) {
-            return response()->json(
-                [
-                    "message" => "Data Not Found"
-                ],
-            );
-        }
-
         $validateData = $request->validate([
             'name' => 'max:255',
             'price' => 'numeric',
@@ -136,14 +120,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        if (!$product) {
-            return response()->json(
-                [
-                    "message" => "Data Not Found"
-                ],
-            );
-        }
-
         Product::destroy($product->id);
 
         return response()->json(
@@ -152,4 +128,20 @@ class ProductController extends Controller
             ]
         );
     }
+
+    // public function search()
+    // {
+    //     $query = Product::query();
+
+    //     $query->where('name', 'like', '%' . request('s') . '%')
+    //         ->orWhere('description', 'like', '%' . request('s') . '%')
+    //         ->orWhere('price', 'like', '%' . request('s') . '%');
+
+    //     return response()->json(
+    //         [
+    //             "message" => "Search Data Success",
+    //             "data" => $query->get()
+    //         ]
+    //     );
+    // }
 }
