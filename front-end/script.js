@@ -1,164 +1,195 @@
-const bodyContent = document.getElementById('body-content');
-const inputName = document.getElementById('name');
-const inputPrice = document.getElementById('price');
-const inputDescription = document.getElementById('description');
-const inputActive = document.getElementById('active');
-const inputQuantity = document.getElementById('quantity');
+const bodyContent = document.getElementById("body-content");
+const inputName = document.getElementById("name");
+const inputPrice = document.getElementById("price");
+const inputDescription = document.getElementById("description");
+const inputActive = document.getElementById("active");
+const inputQuantity = document.getElementById("quantity");
 
-let content = '';
+let content = "";
 
-const url = 'http://127.0.0.1:8000/api/product';
+const url = "http://127.0.0.1:8000/api/product";
 // const url2 = 'https://jsonplaceholder.typicode.com/posts';
 
 // Menampilkan form untuk tambah data atau edit data
 
-const showform = document.getElementById('show-form');
-const inputForm = document.querySelector('form');
+const showform = document.getElementById("show-form");
+const inputForm = document.querySelector("form");
 
-showform.addEventListener('click', function (event) {
-    event.preventDefault();
-    inputForm.classList.toggle('button-toggle');
+showform.addEventListener("click", function (event) {
+  event.preventDefault();
+  inputForm.classList.toggle("button-toggle");
 
-    if (inputForm.classList.contains('button-toggle')) {
-        showform.innerText = 'Hide Form';
-    } else {
-        showform.innerText = 'Show Form';
-    }
+  if (inputForm.classList.contains("button-toggle")) {
+    showform.innerText = "Hide Form";
+  } else {
+    showform.innerText = "Show Form";
+  }
 });
 
 // * Read Data
 
 fetch(url)
-    .then(response => response.json())
-    .then(response => {
-        const data = response.data;
-        data.forEach(product => content += getData(product));
-        bodyContent.innerHTML = content;
-    });
+  .then((response) => response.json())
+  .then((response) => {
+    const data = response.data;
+    data.forEach((product) => (content += getData(product)));
+    bodyContent.innerHTML = content;
+  });
 
 function getData(product) {
-    return `
-        <div class="col-lg-4 col-md-6 mb-3">
-            <div class="card shadow rounded" data-quantity="${product.quantity}" data-active="${product.active}">
-                <div class="card-body" data-id="${product.id}">
-                    <h5 class="card-title name">${product.name}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Rp. <span class="price">${product.price}</span></h6>
-                    <p class="card-text description">${product.description}</p>
-                    <a href="#" class="card-link text-decoration-none" id="edit-button">Edit</a>
-                    <a href="#" class="card-link text-decoration-none" id="delete-button">Delete</a>
-                </div>
-            </div>
+  return `
+    <div class="col-lg-4 col-md-6 mb-3">
+      <div class="card shadow rounded" data-quantity="${product.quantity}" data-active="${product.active}">
+        <div class="card-body" data-id="${product.id}">
+          <h5 class="card-title name">${product.name}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Rp. <span class="price">${product.price}</span></h6>
+          <p class="card-text description">${product.description}</p>
+          <a href="#" class="card-link text-decoration-none" id="detail-button" data-bs-toggle="modal" data-bs-target="#exampleModal">Detail</a>
+          <a href="#" class="card-link text-decoration-none" id="edit-button">Edit</a>
+          <a href="#" class="card-link text-decoration-none" id="delete-button">Delete</a>
         </div>
-    `;
+      </div>
+    </div>
+  `;
 }
 
-const submitButton = document.getElementById('submit-button');
-bodyContent.addEventListener('click', function (event) {
-    event.preventDefault();
+function getDetailData(product) {
+  return `
+    <ul class="list-group">
+      <li class="list-group-item">Nama Makanan : ${product.name}</li>
+      <li class="list-group-item text-muted">Harga : Rp. ${product.price}</li>
+      <li class="list-group-item">Stok : ${product.quantity}</li>
+      <li class="list-group-item">Deskripsi : ${product.description}</li>
+      ${
+        product.quantity != 0
+          ? `<li class="list-group-item badge bg-success text-white">Tersedia</li>`
+          : `<li class="list-group-item badge bg-danger text-white">Tidak Tersedia</li>`
+      }
+    </ul>
+  `;
+}
 
-    let deleteButton = event.target.id == 'delete-button';
-    let editButton = event.target.id == 'edit-button';
+const submitButton = document.getElementById("submit-button");
+bodyContent.addEventListener("click", function (event) {
+  event.preventDefault();
 
-    // * Delete Data
+  const id = event.target.parentElement.dataset.id;
 
-    const id = event.target.parentElement.dataset.id;
-    if (deleteButton) {
-        fetch(`${url}/${id}`, {
-                method: 'DELETE'
-            })
-            .then(response => response.json())
-            .then(() => location.reload());
-    }
+  let deleteButton = event.target.id == "delete-button";
+  let editButton = event.target.id == "edit-button";
+  let detailButton = event.target.id == "detail-button";
 
-    // * Edit Data
+  const parent = event.target.parentElement;
+  const active = parent.parentElement.dataset.active;
+  const quantity = parent.parentElement.dataset.quantity;
 
-    if (editButton) {
-        submitButton.style.display = 'none';
-        const updateButton = document.getElementById('update-button');
-        updateButton.style.display = 'block';
+  // * Detail Data
 
-        const parent = event.target.parentElement;
-        const active = parent.parentElement.dataset.active;
-        const quantity = parent.parentElement.dataset.quantity;
+  const modalContent = document.getElementById("modal-content");
+  if (detailButton) {
+    fetch(`${url}/${id}`)
+      .then((response) => response.json())
+      .then((response) => {
+        const data = response.data;
+        modalContent.innerHTML = getDetailData(data);
+      });
+  }
 
-        let name = parent.querySelector('.name').innerText;
-        let price = parent.querySelector('.price').innerText;
-        let description = parent.querySelector('.description').innerText;
+  // * Delete Data
 
-        inputName.value = name;
-        inputPrice.value = price;
-        inputDescription.value = description;
-        inputActive.value = active;
-        inputQuantity.value = quantity;
+  if (deleteButton) {
+    fetch(`${url}/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then(() => location.reload());
+  }
 
-        updateButton.addEventListener('click', function (event) {
-            event.preventDefault();
+  // * Edit Data
 
-            fetch(`${url}/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: inputName.value,
-                        price: inputPrice.value,
-                        quantity: inputQuantity.value,
-                        active: inputActive.value,
-                        description: inputDescription.value,
-                    })
-                })
-                .then(response => response.json())
-                .then(() => location.reload());
-        });
+  if (editButton) {
+    submitButton.style.display = "none";
+    const updateButton = document.getElementById("update-button");
+    updateButton.style.display = "block";
 
-        const addData = document.getElementById('add-data');
-        addData.style.display = 'inline';
+    let name = parent.querySelector(".name").innerText;
+    let price = parent.querySelector(".price").innerText;
+    let description = parent.querySelector(".description").innerText;
 
-        addData.addEventListener('click', function (event) {
-            event.preventDefault();
+    inputName.value = name;
+    inputPrice.value = price;
+    inputDescription.value = description;
+    inputActive.value = active;
+    inputQuantity.value = quantity;
 
-            addData.style.display = 'none';
+    updateButton.addEventListener("click", function (event) {
+      event.preventDefault();
 
-            updateButton.style.display = 'none';
-            submitButton.style.display = 'block';
+      fetch(`${url}/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: inputName.value,
+          price: inputPrice.value,
+          quantity: inputQuantity.value,
+          active: inputActive.value,
+          description: inputDescription.value,
+        }),
+      })
+        .then((response) => response.json())
+        .then(() => location.reload());
+    });
 
-            inputName.value = '';
-            inputPrice.value = '';
-            inputQuantity.value = '';
-            inputActive.value = '';
-            inputDescription.value = '';
-        });
-    }
+    const addData = document.getElementById("add-data");
+    addData.style.display = "inline";
+
+    addData.addEventListener("click", function (event) {
+      event.preventDefault();
+
+      addData.style.display = "none";
+
+      updateButton.style.display = "none";
+      submitButton.style.display = "block";
+
+      inputName.value = "";
+      inputPrice.value = "";
+      inputQuantity.value = "";
+      inputActive.value = "";
+      inputDescription.value = "";
+    });
+  }
 });
 
 // * Create Data
 
-submitButton.addEventListener('click', function (event) {
-    event.preventDefault();
+submitButton.addEventListener("click", function (event) {
+  event.preventDefault();
 
-    fetch(url, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name: inputName.value,
-                price: inputPrice.value,
-                quantity: inputQuantity.value,
-                active: inputActive.value,
-                description: inputDescription.value,
-            })
-        })
-        .then(response => response.json())
-        .then(response => {
-            let dataArray = [];
-            dataArray.push(response.data);
-            dataArray.forEach(product => content += getData(product));
-        });
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: inputName.value,
+      price: inputPrice.value,
+      quantity: inputQuantity.value,
+      active: inputActive.value,
+      description: inputDescription.value,
+    }),
+  })
+    .then((response) => response.json())
+    .then((response) => {
+      let dataArray = [];
+      dataArray.push(response.data);
+      dataArray.forEach((product) => (content += getData(product)));
+    });
 
-    inputName.value = '';
-    inputPrice.value = '';
-    inputQuantity.value = '';
-    inputActive.value = '';
-    inputDescription.value = '';
+  inputName.value = "";
+  inputPrice.value = "";
+  inputQuantity.value = "";
+  inputActive.value = "";
+  inputDescription.value = "";
 });
