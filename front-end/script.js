@@ -7,7 +7,7 @@ const inputQuantity = document.getElementById("quantity");
 
 let content = "";
 
-const url = "http://127.0.0.1:8000/api/product";
+const url = "https://crud-rest-api-laravel.herokuapp.com/api/product";
 // const url2 = 'https://jsonplaceholder.typicode.com/posts';
 
 // Menampilkan form untuk tambah data atau edit data
