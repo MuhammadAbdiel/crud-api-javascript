@@ -4,37 +4,101 @@ const inputPrice = document.getElementById("price");
 const inputDescription = document.getElementById("description");
 const inputActive = document.getElementById("active");
 const inputQuantity = document.getElementById("quantity");
-
-let content = "";
+const showform = document.getElementById("show-form");
+const inputForm = document.querySelector("form");
+const modalContent = document.getElementById("modal-content");
+const submitButton = document.getElementById("submit-button");
 
 const url = "https://crud-rest-api-laravel.herokuapp.com/api/product";
 // const url2 = 'https://jsonplaceholder.typicode.com/posts';
 
-// Menampilkan form untuk tambah data atau edit data
-
-const showform = document.getElementById("show-form");
-const inputForm = document.querySelector("form");
-
-showform.addEventListener("click", function (event) {
-  event.preventDefault();
-  inputForm.classList.toggle("button-toggle");
-
-  if (inputForm.classList.contains("button-toggle")) {
-    showform.innerText = "Hide Form";
-  } else {
-    showform.innerText = "Show Form";
-  }
-});
+let content = "";
 
 // * Read Data
 
-fetch(url)
-  .then((response) => response.json())
-  .then((response) => {
-    const data = response.data;
-    data.forEach((product) => (content += getData(product)));
-    bodyContent.innerHTML = content;
-  });
+function fetchData(url) {
+  fetch(url)
+    .then((response) => response.json())
+    .then((response) => {
+      const data = response.data;
+      data.forEach((product) => (content += getData(product)));
+      bodyContent.innerHTML = content;
+    });
+}
+
+// * Create Data
+
+function addData(url) {
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: inputName.value,
+      price: inputPrice.value,
+      quantity: inputQuantity.value,
+      active: inputActive.value,
+      description: inputDescription.value,
+    }),
+  })
+    .then((response) => response.json())
+    .then((response) => {
+      let dataArray = [];
+      dataArray.push(response.data);
+      dataArray.forEach((product) => (content += getData(product)));
+    })
+    .then(() => location.reload());
+
+  inputName.value = "";
+  inputPrice.value = "";
+  inputQuantity.value = "";
+  inputActive.value = "";
+  inputDescription.value = "";
+}
+
+// * Read Detail Data
+
+function detailData(url, id) {
+  fetch(`${url}/${id}`)
+    .then((response) => response.json())
+    .then((response) => {
+      const data = response.data;
+      modalContent.innerHTML = getDetailData(data);
+    });
+}
+
+// * Update Data
+
+function updateData(url, id) {
+  fetch(`${url}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: inputName.value,
+      price: inputPrice.value,
+      quantity: inputQuantity.value,
+      active: inputActive.value,
+      description: inputDescription.value,
+    }),
+  })
+    .then((response) => response.json())
+    .then(() => location.reload());
+}
+
+// * Delete Data
+
+function deleteData(url, id) {
+  fetch(`${url}/${id}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then(() => location.reload());
+}
+
+// * Show Data
 
 function getData(product) {
   return `
@@ -53,6 +117,8 @@ function getData(product) {
   `;
 }
 
+// * Show Detail Data
+
 function getDetailData(product) {
   return `
     <ul class="list-group">
@@ -69,8 +135,12 @@ function getDetailData(product) {
   `;
 }
 
-const submitButton = document.getElementById("submit-button");
-bodyContent.addEventListener("click", function (event) {
+submitButton.addEventListener("click", async function (event) {
+  event.preventDefault();
+  await addData(url);
+});
+
+bodyContent.addEventListener("click", async function (event) {
   event.preventDefault();
 
   const id = event.target.parentElement.dataset.id;
@@ -83,29 +153,19 @@ bodyContent.addEventListener("click", function (event) {
   const active = parent.parentElement.dataset.active;
   const quantity = parent.parentElement.dataset.quantity;
 
-  // * Detail Data
+  // * Check if Detail Button is clicked
 
-  const modalContent = document.getElementById("modal-content");
   if (detailButton) {
-    fetch(`${url}/${id}`)
-      .then((response) => response.json())
-      .then((response) => {
-        const data = response.data;
-        modalContent.innerHTML = getDetailData(data);
-      });
+    await detailData(url, id);
   }
 
-  // * Delete Data
+  // * Check if Delete Button is clicked
 
   if (deleteButton) {
-    fetch(`${url}/${id}`, {
-      method: "DELETE",
-    })
-      .then((response) => response.json())
-      .then(() => location.reload());
+    await deleteData(url, id);
   }
 
-  // * Edit Data
+  // * Check if Edit Button is clicked
 
   if (editButton) {
     submitButton.style.display = "none";
@@ -119,27 +179,19 @@ bodyContent.addEventListener("click", function (event) {
     inputName.value = name;
     inputPrice.value = price;
     inputDescription.value = description;
-    inputActive.value = active;
+
+    if (active == true) {
+      inputActive.value = 1;
+    } else {
+      inputActive.value = 0;
+    }
+
     inputQuantity.value = quantity;
 
-    updateButton.addEventListener("click", function (event) {
+    updateButton.addEventListener("click", async function (event) {
       event.preventDefault();
 
-      fetch(`${url}/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: inputName.value,
-          price: inputPrice.value,
-          quantity: inputQuantity.value,
-          active: inputActive.value,
-          description: inputDescription.value,
-        }),
-      })
-        .then((response) => response.json())
-        .then(() => location.reload());
+      await updateData(url, id);
     });
 
     const addData = document.getElementById("add-data");
@@ -162,34 +214,17 @@ bodyContent.addEventListener("click", function (event) {
   }
 });
 
-// * Create Data
+// * Show form to Add Data or Edit Data
 
-submitButton.addEventListener("click", function (event) {
+showform.addEventListener("click", function (event) {
   event.preventDefault();
+  inputForm.classList.toggle("button-toggle");
 
-  fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name: inputName.value,
-      price: inputPrice.value,
-      quantity: inputQuantity.value,
-      active: inputActive.value,
-      description: inputDescription.value,
-    }),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      let dataArray = [];
-      dataArray.push(response.data);
-      dataArray.forEach((product) => (content += getData(product)));
-    });
-
-  inputName.value = "";
-  inputPrice.value = "";
-  inputQuantity.value = "";
-  inputActive.value = "";
-  inputDescription.value = "";
+  if (inputForm.classList.contains("button-toggle")) {
+    showform.innerText = "Hide Form";
+  } else {
+    showform.innerText = "Show Form";
+  }
 });
+
+fetchData(url);
