@@ -16,8 +16,8 @@ let content = "";
 
 // * Read Data
 
-function fetchData(url) {
-  fetch(url)
+async function fetchData(url) {
+  return await fetch(url)
     .then((response) => response.json())
     .then((response) => {
       const data = response.data;
@@ -28,8 +28,8 @@ function fetchData(url) {
 
 // * Create Data
 
-function addData(url) {
-  fetch(url, {
+async function addData(url) {
+  return await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -48,19 +48,21 @@ function addData(url) {
       dataArray.push(response.data);
       dataArray.forEach((product) => (content += getData(product)));
     })
-    .then(() => location.reload());
+    .then(() => {
+      location.reload();
 
-  inputName.value = "";
-  inputPrice.value = "";
-  inputQuantity.value = "";
-  inputActive.value = "";
-  inputDescription.value = "";
+      inputName.value = "";
+      inputPrice.value = "";
+      inputQuantity.value = "";
+      inputActive.value = "";
+      inputDescription.value = "";
+    });
 }
 
 // * Read Detail Data
 
-function detailData(url, id) {
-  fetch(`${url}/${id}`)
+async function detailData(url, id) {
+  return await fetch(`${url}/${id}`)
     .then((response) => response.json())
     .then((response) => {
       const data = response.data;
@@ -70,8 +72,8 @@ function detailData(url, id) {
 
 // * Update Data
 
-function updateData(url, id) {
-  fetch(`${url}/${id}`, {
+async function updateData(url, id) {
+  return await fetch(`${url}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -90,8 +92,8 @@ function updateData(url, id) {
 
 // * Delete Data
 
-function deleteData(url, id) {
-  fetch(`${url}/${id}`, {
+async function deleteData(url, id) {
+  return await fetch(`${url}/${id}`, {
     method: "DELETE",
   })
     .then((response) => response.json())
